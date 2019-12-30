@@ -64,55 +64,60 @@ public class Bitcoin {
         }
     }
 
-    public String getBestBlockHash()  {
+    public String getBestBlockHash() {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getbestblockhash").getJson();
         return this.post(json, StringValue.class);
     }
 
-    public Block getBlock(String hash)  {
+    public Block getBlock(String hash) {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).appendParams(hash).appendParams(1).setMethod("getblock").getJson();
         return this.post(json, Block.Result.class);
     }
 
-    public BlockChainInfo getBlockChainInfo()  {
+    public BlockChainInfo getBlockChainInfo() {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockchaininfo").getJson();
         return this.post(json, BlockChainInfo.Result.class);
     }
 
-    public Integer getBlockCount()  {
+    public int getBlockCount() {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockcount").getJson();
-        return this.post(json, IntValue.class);
+        return this.post(json, IntValue.class).intValue();
     }
 
-    public String getBlockHash(int height)  {
-        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockcount").appendParams(height).getJson();
+    public String getBlockHash(int height) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockhash").appendParams(height).getJson();
         return this.post(json, StringValue.class);
     }
 
-    public BlockHeader getBlockHeader(String hash)  {
+    public BlockHeader getBlockHeader(String hash) {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockheader").appendParams(hash).getJson();
         return this.post(json, BlockHeader.Result.class);
     }
 
     /**
-     *
      * @param hash
      * @param stats BlockStats properties
      * @return
      */
-    public BlockStats getBlockStats(String hash, String... stats)  {
-        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockstats").appendParams(hash).appendParams(stats).getJson();
-        return this.post(json, BlockStats.Result.class);
+    public BlockStats getBlockStats(String hash, String... stats) {
+        return this.queryBlockStats(hash, stats);
     }
 
     /**
-     *
      * @param height
-     * @param stats BlockStats properties
+     * @param stats  BlockStats properties
      * @return
      */
-    public BlockStats getBlockStats(int height, String... stats)  {
-        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockstats").appendParams(stats).getJson();
+    public BlockStats getBlockStats(int height, String... stats) {
+        return this.queryBlockStats(height, stats);
+    }
+
+    private BlockStats queryBlockStats(Object param, String... stats) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockstats").appendParams(param);
+        if (stats != null && stats.length > 0) {
+            builder.appendParams(stats);
+        }
+        JsonRpc20 json = builder.getJson();
         return this.post(json, BlockStats.Result.class);
     }
 
