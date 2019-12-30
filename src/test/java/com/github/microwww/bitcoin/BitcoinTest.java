@@ -2,6 +2,8 @@ package com.github.microwww.bitcoin;
 
 import com.github.microwww.bitcoin.model.BlockHeader;
 import com.github.microwww.bitcoin.model.BlockStats;
+import com.github.microwww.bitcoin.model.ChainTip;
+import com.github.microwww.bitcoin.model.ChainTxStats;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -49,10 +51,22 @@ public class BitcoinTest {
     }
 
     @Test
-    public void getBlockStats() throws IOException {
+    public void getBlockStats() {
         BlockStats header = api.getBlockStats(100);
         header = api.getBlockStats(header.getBlockhash(), "height", "txs");
         assertEquals(100, header.getHeight());
+    }
+
+    @Test
+    public void getChainTips() {
+        ChainTip[] header = api.getChainTips();
+        assertTrue(header.length > 0);
+    }
+
+    @Test
+    public void getChainTxStats() {
+        ChainTxStats header = api.getChainTxStats();
+        assertTrue(header.getWindowFinalBlockHash().startsWith("000000"));
     }
 
 }

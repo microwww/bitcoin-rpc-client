@@ -121,6 +121,16 @@ public class Bitcoin {
         return this.post(json, BlockStats.Result.class);
     }
 
+    public ChainTip[] getChainTips() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getchaintips").getJson();
+        return this.post(json, ChainTip.Result.class);
+    }
+
+    public ChainTxStats getChainTxStats() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getchaintxstats").getJson();
+        return this.post(json, ChainTxStats.Result.class);
+    }
+
     public int getId() {
         int ii = inc.addAndGet(1);
         if (ii >= 9_999) {
