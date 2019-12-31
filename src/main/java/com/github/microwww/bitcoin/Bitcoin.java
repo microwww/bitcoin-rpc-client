@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Bitcoin {
@@ -79,9 +80,9 @@ public class Bitcoin {
         return this.post(json, BlockChainInfo.Result.class);
     }
 
-    public int getBlockCount() {
+    public long getBlockCount() {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getblockcount").getJson();
-        return this.post(json, IntValue.class).intValue();
+        return this.post(json, LongValue.class).longValue();
     }
 
     public String getBlockHash(int height) {
@@ -129,6 +130,41 @@ public class Bitcoin {
     public ChainTxStats getChainTxStats() {
         JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getchaintxstats").getJson();
         return this.post(json, ChainTxStats.Result.class);
+    }
+
+    public Long getDifficulty() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getdifficulty").getJson();
+        return this.post(json, LongValue.class).longValue();
+    }
+
+    public MemPoolInfo getMemPoolInfo() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getmempoolinfo").getJson();
+        return this.post(json, MemPoolInfo.Result.class);
+    }
+
+    public String[] getRawMemPool() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getrawmempool").getJson();
+        return this.post(json, StringArray.class);
+    }
+
+    public Map<String, MemPoolTxInfo> getRawMemPoolTx() {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getrawmempool").appendParams(true).getJson();
+        return this.post(json, MemPoolTxInfo.MapResult.class);
+    }
+
+    public String[] getMemPoolAncestors(String txHash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getmempoolancestors").appendParams(txHash).getJson();
+        return this.post(json, StringArray.class);
+    }
+
+    public String[] getMemPoolDescendants(String txHash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getmempooldescendants").appendParams(txHash).getJson();
+        return this.post(json, StringArray.class);
+    }
+
+    public MemPoolTxInfo getMemPoolEntry(String txHash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("getmempoolentry").appendParams(txHash).getJson();
+        return this.post(json, MemPoolTxInfo.Result.class);
     }
 
     public int getId() {

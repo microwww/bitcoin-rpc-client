@@ -1,12 +1,9 @@
 package com.github.microwww.bitcoin;
 
-import com.github.microwww.bitcoin.model.BlockHeader;
-import com.github.microwww.bitcoin.model.BlockStats;
-import com.github.microwww.bitcoin.model.ChainTip;
-import com.github.microwww.bitcoin.model.ChainTxStats;
+import com.github.microwww.bitcoin.model.*;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +31,7 @@ public class BitcoinTest {
 
     @Test
     public void getBlockCount() {
-        int count = api.getBlockCount();
+        long count = api.getBlockCount();
         assertTrue(count > 100);
     }
 
@@ -67,6 +64,48 @@ public class BitcoinTest {
     public void getChainTxStats() {
         ChainTxStats header = api.getChainTxStats();
         assertTrue(header.getWindowFinalBlockHash().startsWith("000000"));
+    }
+
+    @Test
+    public void getDifficulty() {
+        long val = api.getDifficulty();
+        assertTrue(val > 100);
+    }
+
+    @Test
+    public void getMemPoolInfo() {
+        MemPoolInfo val = api.getMemPoolInfo();
+        assertTrue(val.getSize() > 0);
+    }
+
+    @Test
+    public void getRawMemPool() {
+        String[] val = api.getRawMemPool();
+        assertTrue(val.length > 0);
+    }
+
+    @Test
+    public void getRawMemPoolTx() {
+        Map<String, MemPoolTxInfo> val = api.getRawMemPoolTx();
+        assertTrue(val.values().size() > 0);
+    }
+
+    @Test
+    public void getMemPoolAncestors() {
+        String[] val = api.getRawMemPool();
+        api.getMemPoolAncestors(val[2]);
+    }
+
+    @Test
+    public void getMemPoolDescendants() {
+        String[] val = api.getRawMemPool();
+        api.getMemPoolDescendants(val[2]);
+    }
+
+    @Test
+    public void getMemPoolEntry() {
+        String[] val = api.getRawMemPool();
+        api.getMemPoolEntry(val[2]);
     }
 
 }
