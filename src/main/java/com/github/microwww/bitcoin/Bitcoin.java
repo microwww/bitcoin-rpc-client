@@ -167,6 +167,24 @@ public class Bitcoin {
         return this.post(json, MemPoolTxInfo.Result.class);
     }
 
+    public TransactionOut getTxOut(String txHash, int n, boolean pool) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("gettxout")
+                .appendParams(txHash).appendParams(n).appendParams(pool).getJson();
+        return this.post(json, TransactionOut.Result.class);
+    }
+
+    public TransactionOut getTxOutProofByBlock(String blockHash, String... txHash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("gettxoutproof")
+                .appendParams(txHash).appendParams(blockHash).getJson();
+        return this.post(json, TransactionOut.Result.class);
+    }
+
+    public String getTxOutProof(String... txHash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setId(this.getId()).setMethod("gettxoutproof")
+                .appendParams(txHash).getJson();
+        return this.post(json, StringValue.class);
+    }
+
     public int getId() {
         int ii = inc.addAndGet(1);
         if (ii >= 9_999) {

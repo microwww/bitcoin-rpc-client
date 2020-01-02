@@ -5,8 +5,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BitcoinTest {
 
@@ -106,6 +105,28 @@ public class BitcoinTest {
     public void getMemPoolEntry() {
         String[] val = api.getRawMemPool();
         api.getMemPoolEntry(val[2]);
+    }
+
+    @Test
+    public void getTxOut() {
+        String tx = api.getBlock("0000000000000000000fc70207790a878fa2b7f58769454e84eeec93b1ccc1e4").getTx()[5];
+        TransactionOut val = api.getTxOut(tx, 1, true);
+        assertEquals("1Em2AiirvVmifJ297YH6v1XJmLBinWVG1t", val.getScriptPubKey().getAddresses()[0]);
+    }
+
+    @Test
+    public void getTxOutProof() {
+        String block = "0000000000000000000fc70207790a878fa2b7f58769454e84eeec93b1ccc1e4";
+        String[] txs = api.getBlock(block).getTx();
+        //TransactionOut val = api.getTxOutProofByBlock("00000000000000000008f029112b79dceff814dcf02e1902474ac8051af16a8c", tx);
+        String val = api.getTxOutProof(txs[5], txs[6]);
+        assertTrue(val.startsWith("00200020e093663f97ba1af46ec0a5114f0ab2c436ed137c053d04"));
+        try {
+            api.getTxOutProof(txs[5], "9ee02950bf0f95dc08f9b05048d190eedae3095d3828a8f57262d66382768a5f");
+            fail();
+        } catch (HttpException ex) {
+            assertEquals(-5, ex.tryJsonError().getCode());
+        }
     }
 
 }

@@ -33,7 +33,6 @@ public class JsonRpcResult<T> {
         return id;
     }
 
-
     public static class Error {
 
         private int code;
