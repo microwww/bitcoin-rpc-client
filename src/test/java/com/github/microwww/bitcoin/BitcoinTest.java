@@ -1,5 +1,6 @@
 package com.github.microwww.bitcoin;
 
+import com.github.microwww.bitcoin.api.BlockChainApi;
 import com.github.microwww.bitcoin.model.*;
 import org.junit.Test;
 
