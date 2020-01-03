@@ -129,4 +129,9 @@ public class BitcoinTest {
         }
     }
 
+    @Test
+    public void verifyChain() {
+        api.verifyChain(3, 6);
+    }
+
 }
