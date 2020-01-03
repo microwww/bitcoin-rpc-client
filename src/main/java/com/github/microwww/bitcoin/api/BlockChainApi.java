@@ -13,11 +13,6 @@ public class BlockChainApi extends JsonRpcClient {
         super(username, password, url);
     }
 
-    public BlockChainApi setOkHttpClient(OkHttpClient client) {
-        this.client = client;
-        return this;
-    }
-
     public String getBestBlockHash() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getbestblockhash").getJson();
         return this.post(json, StringValue.class);

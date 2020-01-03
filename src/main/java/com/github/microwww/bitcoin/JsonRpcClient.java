@@ -59,6 +59,11 @@ public class JsonRpcClient {
         }
     }
 
+    public JsonRpcClient setOkHttpClient(OkHttpClient client) {
+        this.client = client;
+        return this;
+    }
+
     public int getId() {
         int ii = inc.addAndGet(1);
         if (ii >= 9_999) {
