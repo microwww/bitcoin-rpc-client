@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 public class BitcoinTest {
 
-    private Bitcoin api = new Bitcoin("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://localhost:8332/");
+    private BlockChainApi api = new BlockChainApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://localhost:8332/");
 
     @Test
     public void getBestBlockHash() {

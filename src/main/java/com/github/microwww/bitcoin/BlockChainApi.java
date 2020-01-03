@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Bitcoin {
-    private static Logger logger = LoggerFactory.getLogger(Bitcoin.class);
+public class BlockChainApi {
+    private static Logger logger = LoggerFactory.getLogger(BlockChainApi.class);
     private static final ObjectMapper mapper = new ObjectMapper(); //.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             //.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.1.32", 3128)))
@@ -23,13 +23,13 @@ public class Bitcoin {
     private String url;
     private static transient AtomicInteger inc = new AtomicInteger(0);
 
-    public Bitcoin(String username, String password, String url) {
+    public BlockChainApi(String username, String password, String url) {
         this.username = username;
         this.password = password;
         this.url = url;
     }
 
-    public Bitcoin setOkHttpClient(OkHttpClient client) {
+    public BlockChainApi setOkHttpClient(OkHttpClient client) {
         this.client = client;
         return this;
     }
