@@ -16,6 +16,7 @@ public class JsonRpcClient {
             //.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.1.32", 3128)))
             .build();
     private static transient AtomicInteger inc = new AtomicInteger(0);
+
     protected OkHttpClient client = okHttpClient;
     protected String username;
     protected String password;
