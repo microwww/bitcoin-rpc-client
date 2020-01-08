@@ -1,0 +1,18 @@
+
+FILE ::  /home/coin/btc/bitcoin.conf :::
+++++++++++++++++++++++++++++++++++++++++++++++++
+regtest=1
+
+rpcbind=0.0.0.0
+port=8332
+rpcuser=btcrpc
+rpcpassword=9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29
+rpcallowip=192.168.1.0/24
+
+server=1
+
+deprecatedrpc=accounts,generate
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+sudo docker run -d --restart always --name bitcoin -v /home/coin/btc/:/home/bitcoin/.bitcoin/ -p 8332:18443 ruimarinho/bitcoin-core:0.17.1
