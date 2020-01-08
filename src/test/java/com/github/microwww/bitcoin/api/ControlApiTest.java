@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class ControlApiTest {
     private static final Logger logger = LoggerFactory.getLogger(ControlApiTest.class);
-    private ControlApi api = new ControlApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://localhost:8332/");
+    private ControlApi api = new ControlApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://192.168.1.184:8332/");
 
     @Test
     public void getMemoryInfo() {
