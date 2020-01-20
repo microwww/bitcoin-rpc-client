@@ -3,13 +3,20 @@
  */
 package com.github.microwww.bitcoin.model;
 
+import com.github.microwww.bitcoin.JsonRpcResult;
+
 public class ScriptPubKey {
+
+    public class Result extends JsonRpcResult<ScriptPubKey> {
+    }
 
     private String asm;
     private String hex;
     private int reqSigs;
     private String type;
     private String[] addresses;
+    // DecodeScript
+    private String p2sh;
 
     public void setAsm(String asm) {
         this.asm = asm;
@@ -49,5 +56,13 @@ public class ScriptPubKey {
 
     public void setAddresses(String[] addresses) {
         this.addresses = addresses;
+    }
+
+    public String getP2sh() {
+        return p2sh;
+    }
+
+    public void setP2sh(String p2sh) {
+        this.p2sh = p2sh;
     }
 }

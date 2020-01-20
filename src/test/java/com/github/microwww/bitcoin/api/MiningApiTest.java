@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class MiningApiTest {
-    private MiningApi api = new MiningApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://192.168.1.184:8332/");
+    private MiningApi api = new MiningApi("btcrpc", "123456789", "http://192.168.1.184:8332/");
 
     @Test
     public void getBlockTemplate() {

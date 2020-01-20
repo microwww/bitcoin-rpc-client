@@ -2,7 +2,7 @@ package com.github.microwww.bitcoin.api;
 
 import com.github.microwww.bitcoin.JsonRpc20;
 import com.github.microwww.bitcoin.JsonRpcClient;
-import com.github.microwww.bitcoin.model.StringArray;
+import com.github.microwww.bitcoin.model.ArrayValue;
 
 public class GeneratingApi extends JsonRpcClient {
 
@@ -12,12 +12,12 @@ public class GeneratingApi extends JsonRpcClient {
 
     public String[] generate(int count) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("generate").appendParams(count).getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
     public String[] generateToAddress(int count, String address) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("generatetoaddress").appendParams(count).appendParams(address).getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
 }

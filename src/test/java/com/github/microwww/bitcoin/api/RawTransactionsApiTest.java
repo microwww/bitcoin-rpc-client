@@ -6,7 +6,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class RawTransactionsApiTest {
-    private RawTransactionsApi api = new RawTransactionsApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://192.168.1.184:8332/");
+
+    private RawTransactionsApi api = new RawTransactionsApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
 
     @Test
     public void disconnectNode() {

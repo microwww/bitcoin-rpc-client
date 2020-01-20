@@ -35,12 +35,12 @@ public class NetworkApi extends JsonRpcClient {
 
     public String[] getAddedNodeInfo(String node) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getaddednodeinfo").appendParams(node).getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
     public String[] getAddedNodeInfo() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getaddednodeinfo").getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
     public Long getConnectionCount() {
@@ -60,12 +60,12 @@ public class NetworkApi extends JsonRpcClient {
 
     public String[] getPeerInfo() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getpeerinfo").getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
     public String[] listBanned() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("listbanned").getJson();
-        return this.post(json, StringArray.class);
+        return this.post(json, ArrayValue.class);
     }
 
     public void ping() {

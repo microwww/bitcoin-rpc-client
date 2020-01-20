@@ -1,6 +1,7 @@
 package com.github.microwww.bitcoin;
 
 import com.github.microwww.bitcoin.api.BlockChainApi;
+import com.github.microwww.bitcoin.api.RawTransactionsApi;
 import com.github.microwww.bitcoin.model.*;
 import org.junit.Test;
 
@@ -10,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class BitcoinTest {
 
-    private BlockChainApi api = new BlockChainApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://localhost:18332/");
+    private BlockChainApi api = new BlockChainApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
 
     @Test
     public void getBestBlockHash() {

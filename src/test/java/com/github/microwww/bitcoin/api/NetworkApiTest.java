@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class NetworkApiTest {
-    private NetworkApi api = new NetworkApi("btcrpc", "9pDbNxQJjXUpZKQNYoFQiWDqYXyyrd29", "http://192.168.1.184:8332/");
+    private NetworkApi api = new NetworkApi("btcrpc", "123456789", "http://192.168.1.184:8332/");
 
     @Test
     public void addNode() {

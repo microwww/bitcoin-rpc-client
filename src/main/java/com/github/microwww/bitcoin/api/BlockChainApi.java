@@ -1,9 +1,10 @@
 package com.github.microwww.bitcoin.api;
 
-import com.github.microwww.bitcoin.*;
+import com.github.microwww.bitcoin.JsonRpc20;
+import com.github.microwww.bitcoin.JsonRpcClient;
 import com.github.microwww.bitcoin.annotation.NoComplete;
+import com.github.microwww.bitcoin.model.ArrayValue.StringArray;
 import com.github.microwww.bitcoin.model.*;
-import okhttp3.*;
 
 import java.util.Map;
 
