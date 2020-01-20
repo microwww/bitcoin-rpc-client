@@ -3,6 +3,7 @@ package com.github.microwww.bitcoin.api;
 import com.github.microwww.bitcoin.JsonRpc20;
 import com.github.microwww.bitcoin.JsonRpcClient;
 import com.github.microwww.bitcoin.model.*;
+import com.github.microwww.bitcoin.model.ArrayValue.StringArray;
 
 public class NetworkApi extends JsonRpcClient {
     public NetworkApi(String username, String password, String url) {
@@ -35,12 +36,12 @@ public class NetworkApi extends JsonRpcClient {
 
     public String[] getAddedNodeInfo(String node) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getaddednodeinfo").appendParams(node).getJson();
-        return this.post(json, ArrayValue.class);
+        return this.post(json, StringArray.class);
     }
 
     public String[] getAddedNodeInfo() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getaddednodeinfo").getJson();
-        return this.post(json, ArrayValue.class);
+        return this.post(json, StringArray.class);
     }
 
     public Long getConnectionCount() {
@@ -60,12 +61,12 @@ public class NetworkApi extends JsonRpcClient {
 
     public String[] getPeerInfo() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getpeerinfo").getJson();
-        return this.post(json, ArrayValue.class);
+        return this.post(json, StringArray.class);
     }
 
     public String[] listBanned() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("listbanned").getJson();
-        return this.post(json, ArrayValue.class);
+        return this.post(json, StringArray.class);
     }
 
     public void ping() {
