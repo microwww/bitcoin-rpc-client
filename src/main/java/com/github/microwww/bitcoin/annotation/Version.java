@@ -6,9 +6,9 @@ import java.lang.annotation.*;
 @Target(value = {ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Version {
-    String since() default "0.0.1";
+    String since() default "";
 
-    String warn();
+    String warn() default "";
 
-    String end();
+    String end() default "";
 }

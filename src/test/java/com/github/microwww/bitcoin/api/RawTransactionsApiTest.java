@@ -1,6 +1,5 @@
 package com.github.microwww.bitcoin.api;
 
-import com.github.microwww.bitcoin.HttpException;
 import com.github.microwww.bitcoin.model.AccountTransaction;
 import com.github.microwww.bitcoin.model.TransactionInput;
 import com.github.microwww.bitcoin.model.TransactionOutput;
@@ -20,19 +19,14 @@ public class RawTransactionsApiTest {
     @Test
     public void createRawTransaction() {
         AccountTransaction[] txs = wallet.listTransactions();
-        AccountTransaction tx0 = txs[txs.length - 1];
+        AccountTransaction tx0 = txs[0];
         TransactionInput in = tx0.toTransactionInput();
+
         String address = wallet.getAccountAddress("target");
         TransactionOutput out = new TransactionOutput.Transaction(address, tx0.getAmount() - 0.001);
-        try {
-            String hex = api.createRawTransaction(new TransactionInput[]{in}, new TransactionOutput[]{out, new TransactionOutput.Data("test message".getBytes())});
-            //api.sendRawTransaction(hex);
-            TransactionSign signHex = api.signRawTransaction(hex);
-            api.sendRawTransaction(signHex.getHex());
-        }catch (HttpException e){
-            e.logger();
-            e.printStackTrace();
-        }
+        String hex = api.createRawTransaction(new TransactionInput[]{in}, new TransactionOutput[]{out, new TransactionOutput.Data("test message".getBytes())});
+        TransactionSign signHex = api.signRawTransaction(hex);
+        api.sendRawTransaction(signHex.getHex());
     }
 
     @Test
