@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.microwww.bitcoin.JsonRpcResult;
 
 public class PoolAccept {
-    public class Result extends JsonRpcResult<PoolAccept> {
+    public class Result extends JsonRpcResult<PoolAccept[]> {
     }
+
     private String txid;
     private boolean allowed;
     @JsonProperty("reject-reason")

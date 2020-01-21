@@ -7,8 +7,7 @@ public class ArrayValue<T> extends JsonRpcResult<T[]> {
         return this.getResult();
     }
 
-    public static class StringArray extends ArrayValue<String>{
+    public static class StringArray extends ArrayValue<String> {
     }
-    public static class PoolAcceptArray extends ArrayValue<PoolAccept>{
-    }
+
 }

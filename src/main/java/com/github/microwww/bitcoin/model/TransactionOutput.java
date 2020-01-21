@@ -1,5 +1,6 @@
 package com.github.microwww.bitcoin.model;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,15 +32,15 @@ public interface TransactionOutput {
     }
 
     public static class Data implements TransactionOutput {
-        private final String data;
+        private final byte[] data;
 
-        public Data(String data) {
+        public Data(byte[] data) {
             this.data = data;
         }
 
         @Override
         public Map<String, ?> toSingleMap() {
-            return Collections.singletonMap("data", data);
+            return Collections.singletonMap("data", new BigInteger(data).toString(16));
         }
     }
 }

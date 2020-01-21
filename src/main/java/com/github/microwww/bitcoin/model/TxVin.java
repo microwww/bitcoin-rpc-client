@@ -5,10 +5,15 @@ package com.github.microwww.bitcoin.model;
 
 public class TxVin {
 
+    private long sequence;
+
+    // 币基
+    private String coinbase;
+
+    // 非币基交易
     private String txid;
     private int vout;
     private ScriptSig scriptSig;
-    private int sequence;
 
     public void setTxid(String txid) {
         this.txid = txid;
@@ -34,12 +39,19 @@ public class TxVin {
         this.scriptSig = scriptSig;
     }
 
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
-    }
-
-    public int getSequence() {
+    public long getSequence() {
         return sequence;
     }
 
+    public void setSequence(long sequence) {
+        this.sequence = sequence;
+    }
+
+    public String getCoinbase() {
+        return coinbase;
+    }
+
+    public void setCoinbase(String coinbase) {
+        this.coinbase = coinbase;
+    }
 }

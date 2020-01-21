@@ -6,7 +6,7 @@ package com.github.microwww.bitcoin.model;
 import com.github.microwww.bitcoin.JsonRpcResult;
 
 public class RawTransaction {
-    public class Result extends JsonRpcResult<RawTransaction> {
+    public static class Result extends JsonRpcResult<RawTransaction> {
     }
 
     private String txid;
@@ -18,6 +18,11 @@ public class RawTransaction {
     private int locktime;
     private TxVin[] vin;
     private TxVout[] vout;
+    private String hex;
+    private String blockhash;
+    private int confirmations;
+    private int time;
+    private int blocktime;
 
     public void setTxid(String txid) {
         this.txid = txid;
@@ -89,5 +94,45 @@ public class RawTransaction {
 
     public void setVout(TxVout[] vout) {
         this.vout = vout;
+    }
+
+    public String getHex() {
+        return hex;
+    }
+
+    public void setHex(String hex) {
+        this.hex = hex;
+    }
+
+    public String getBlockhash() {
+        return blockhash;
+    }
+
+    public void setBlockhash(String blockhash) {
+        this.blockhash = blockhash;
+    }
+
+    public int getConfirmations() {
+        return confirmations;
+    }
+
+    public void setConfirmations(int confirmations) {
+        this.confirmations = confirmations;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getBlocktime() {
+        return blocktime;
+    }
+
+    public void setBlocktime(int blocktime) {
+        this.blocktime = blocktime;
     }
 }

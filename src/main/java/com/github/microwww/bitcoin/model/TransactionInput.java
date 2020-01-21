@@ -4,7 +4,7 @@ public class TransactionInput {
     private String txid;
     private int vout;
     //(numeric, optional, default=depends on the value of the 'replaceable' and 'locktime' arguments) The sequence number
-    private int sequence;
+    private Integer sequence;
 
     public TransactionInput() {
     }
@@ -12,7 +12,6 @@ public class TransactionInput {
     public TransactionInput(String txid, int vout) {
         this.txid = txid;
         this.vout = vout;
-        this.sequence = sequence;
     }
 
     public String getTxid() {
@@ -31,11 +30,11 @@ public class TransactionInput {
         this.vout = vout;
     }
 
-    public int getSequence() {
+    public Integer getSequence() {
         return sequence;
     }
 
-    public void setSequence(int sequence) {
+    public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
 }

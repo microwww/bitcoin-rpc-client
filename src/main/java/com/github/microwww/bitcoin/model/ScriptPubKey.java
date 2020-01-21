@@ -12,9 +12,13 @@ public class ScriptPubKey {
 
     private String asm;
     private String hex;
-    private int reqSigs;
     private String type;
+    // type:: nulldata , OVER
+
+    // type: pubkey
+    private int reqSigs;
     private String[] addresses;
+
     // DecodeScript
     private String p2sh;
 
