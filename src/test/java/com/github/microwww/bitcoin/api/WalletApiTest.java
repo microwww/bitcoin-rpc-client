@@ -2,13 +2,13 @@ package com.github.microwww.bitcoin.api;
 
 import com.github.microwww.bitcoin.model.AccountTransaction;
 import com.github.microwww.bitcoin.model.AccountType;
-import com.github.microwww.bitcoin.model.RawTransaction;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class WalletApiTest {
+
     private WalletApi api = new WalletApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
     private RawTransactionsApi txapi = new RawTransactionsApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
 
@@ -53,4 +53,14 @@ public class WalletApiTest {
         String acc = api.getAccount(addr);
         assertEquals(eg, acc);
     }
+
+    @Test
+    public void testSendFrom() {
+        //2NDF1TpMjYqHGtj7BekRX9Eohvz8gHVnhaB :: cVbZxoFUvCFpkjtqrSiRWDHsWC9mSDd7aMr5Eg91Yp1khNt8EeGe
+        String txid = api.sendFrom("", "2NDF1TpMjYqHGtj7BekRX9Eohvz8gHVnhaB", 0.1);
+        assertEquals(64, txid.length());
+        txid = api.sendFrom("", "2NDF1TpMjYqHGtj7BekRX9Eohvz8gHVnhaB", 0.1, 1, "hello", "test");
+        assertEquals(64, txid.length());
+    }
+
 }

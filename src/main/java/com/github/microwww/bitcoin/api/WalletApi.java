@@ -1,8 +1,5 @@
 package com.github.microwww.bitcoin.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.microwww.bitcoin.JsonRpc20;
 import com.github.microwww.bitcoin.JsonRpcClient;
 import com.github.microwww.bitcoin.annotation.NoComplete;
@@ -284,13 +281,41 @@ public class WalletApi extends JsonRpcClient {
     public void rescanblockchain() {
     }
 
-    @NoComplete //sendfrom "fromaccount" "toaddress" amount ( minconf "comment" "comment_to" )
-    public void sendfrom(String fromAccount, String toAddress, double amount) {
+
+    public String sendFrom(String fromAccount, String toAddress, double amount) {
+        return sendFrom(fromAccount, toAddress, amount, 1, null, null);
     }
 
+    /**
+     * @param fromAccount
+     * @param toAddress
+     * @param amount
+     * @param minConfirmed
+     * @param comment
+     * @param commentTo
+     * @return
+     */
+    @NoComplete //sendfrom "fromaccount" "toaddress" amount ( minconf "comment" "comment_to" )
+    public String sendFrom(String fromAccount, String toAddress, double amount, int minConfirmed, String comment, String commentTo) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("sendfrom")
+                .appendParams(fromAccount).appendParams(toAddress).appendParams(amount)
+                .appendParams(minConfirmed).appendParams(comment).appendParams(commentTo).getJson();
+        return this.post(json, StringValue.class);
+    }
+
+    /**
+     * @param fromAccount
+     * @param tx
+     * @param minConfirmed    Default=1
+     * @param comment         Optional, A comment
+     * @param subtractFeeFrom Optional, A json array with addresses. The fee will be equally deducted from the amount of each selected address. Those recipients will receive less bitcoins than you enter in their corresponding amount field. If no addresses are specified here, the sender pays the fee.
+     * @return
+     */
     @NoComplete
     //sendmany "" "fromaccount" {"address":amount,...} ( minconf "comment" ["address",...] replaceable conf_target "estimate_mode")
-    public void sendmany(String fromAccount, TransactionOutput.Transaction... tx) {
+    public String sendMany(String fromAccount, TransactionOutput.Transaction[] tx, int minConfirmed, String comment, String[] subtractFeeFrom) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("sendmany").appendParams(fromAccount).appendParams(tx).getJson();
+        return this.post(json, StringValue.class);
     }
 
     @NoComplete

@@ -20,6 +20,8 @@ public class AccountTransaction {
     private String category;
     private double amount;
     private int vout;
+    private String comment;
+    private String to; // comment_to
 
     // before transaction confirmations, (confirmations = 0)
     private Boolean trusted;
@@ -196,5 +198,21 @@ public class AccountTransaction {
 
     public void setTrusted(Boolean trusted) {
         this.trusted = trusted;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 }

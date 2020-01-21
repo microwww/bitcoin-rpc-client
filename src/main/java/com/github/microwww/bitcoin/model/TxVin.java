@@ -6,6 +6,7 @@ package com.github.microwww.bitcoin.model;
 public class TxVin {
 
     private long sequence;
+    String[] txinwitness; // comment , option
 
     // 币基
     private String coinbase;
@@ -53,5 +54,13 @@ public class TxVin {
 
     public void setCoinbase(String coinbase) {
         this.coinbase = coinbase;
+    }
+
+    public String[] getTxinwitness() {
+        return txinwitness;
+    }
+
+    public void setTxinwitness(String[] txinwitness) {
+        this.txinwitness = txinwitness;
     }
 }
