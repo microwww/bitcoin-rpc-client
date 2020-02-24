@@ -10,4 +10,6 @@ public class ArrayValue<T> extends JsonRpcResult<T[]> {
     public static class StringArray extends ArrayValue<String> {
     }
 
+    public static class ThreeArray extends JsonRpcResult<Object[][][]> {
+    }
 }

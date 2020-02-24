@@ -5,6 +5,10 @@ import com.github.microwww.bitcoin.JsonRpcClient;
 import com.github.microwww.bitcoin.annotation.NoComplete;
 import com.github.microwww.bitcoin.model.*;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 public class WalletApi extends JsonRpcClient {
 
     public WalletApi(String username, String password, String url) {
@@ -123,7 +127,9 @@ public class WalletApi extends JsonRpcClient {
     }
 
     @NoComplete //gettransaction "txid" ( include_watchonly )
-    public void gettransaction(String txid) {
+    public WalletTransaction getTransaction(String txhash) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("gettransaction").appendParams(txhash).getJson();
+        return this.post(json, WalletTransaction.Result.class);
     }
 
     @NoComplete //getunconfirmedbalance
@@ -184,8 +190,31 @@ public class WalletApi extends JsonRpcClient {
     public void listaccounts() {
     }
 
-    @NoComplete //listaddressgroupings
-    public void listaddressgroupings(String destination) {
+    @NoComplete
+    public Object[][][] listAddressGroupings() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("listaddressgroupings").getJson();
+        return this.post(json, ArrayValue.ThreeArray.class);
+    }
+
+    public Map<String, Balance> listAddressGroupingsBalance() {
+        Object[][][] post = this.listAddressGroupings();
+        Map<String, Balance> list = new HashMap<>();
+        for (Object[][] o1 : post) {
+            for (Object[] o2 : o1) {
+                Balance ce = new Balance(null, null, "");
+                if (o2.length > 1) {
+                    ce.setAddress((String) o2[0]);
+                    ce.setBalance(new BigDecimal(o2[1].toString())); // 必须用string 否则会有精度问题
+                } else {
+                    throw new RuntimeException("listAddressGroupings format error ! must: [[[address,balance,???]]]");
+                }
+                if (o2.length > 2) {
+                    ce.setAccount((String) o2[2]);
+                }
+                list.put(ce.getAddress(), ce);
+            }
+        }
+        return list;
     }
 
     @NoComplete //listlabels ( "purpose" )
@@ -232,7 +261,7 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json, AccountTransaction.Result.class);
     }
 
-    public String listUnspent(int minConfirmed, String... addresses) {
+    public UnspentTransaction[] listUnspent(int minConfirmed, String... addresses) {
         return listUnspent(minConfirmed, Integer.MAX_VALUE, addresses, true, null);
     }
 
@@ -245,7 +274,7 @@ public class WalletApi extends JsonRpcClient {
      * @return
      */
     @NoComplete //listunspent ( minconf maxconf  ["addresses",...] [include_unsafe] [query_options])
-    public String listUnspent(int minConfirmed, int maxCConfirmed, String[] addresses, boolean includeUnsafe, QueryOptions opt) {
+    public UnspentTransaction[] listUnspent(int minConfirmed, int maxCConfirmed, String[] addresses, boolean includeUnsafe, QueryOptions opt) {
         JsonRpc20.Builder params = new JsonRpc20.Builder().setMethod("listunspent").appendParams(minConfirmed)
                 .appendParams(maxCConfirmed)
                 .appendParams(addresses)
@@ -254,9 +283,8 @@ public class WalletApi extends JsonRpcClient {
             params.appendParams(opt.toJson());
         }
         JsonRpc20 json = params.getJson();
-        return this.post(json, StringValue.class);
+        return this.post(json, UnspentTransaction.Result.class);
     }
-
 
     public void listwallets() {
     }
@@ -320,7 +348,7 @@ public class WalletApi extends JsonRpcClient {
 
     @NoComplete
     //sendtoaddress "address" amount ( "comment" "comment_to" subtractfeefromamount replaceable conf_target "estimate_mode")
-    public void sendtoaddress(String address, double amount) {
+    public void sendToAddress(String address, double amount) {
     }
 
     @NoComplete //setlabel "address" "label"
