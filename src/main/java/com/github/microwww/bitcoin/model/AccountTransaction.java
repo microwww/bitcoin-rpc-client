@@ -37,6 +37,10 @@ public class AccountTransaction {
     private String to; // comment_to
     private boolean generated;
 
+    public TransactionInput toTransactionInput() {
+        return new TransactionInput(this.getTxid(), this.vout);
+    }
+
     public String getAccount() {
         return account;
     }

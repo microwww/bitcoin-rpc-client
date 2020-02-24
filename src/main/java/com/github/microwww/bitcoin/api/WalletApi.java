@@ -8,6 +8,7 @@ import com.github.microwww.bitcoin.model.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class WalletApi extends JsonRpcClient {
 
@@ -187,7 +188,14 @@ public class WalletApi extends JsonRpcClient {
     }
 
     @NoComplete //listaccounts ( minconf include_watchonly)
-    public void listaccounts() {
+    public Map<String, Double> listAccounts() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("listaccounts").getJson();
+        return this.post(json, MapValue.class);
+    }
+
+    public String[] listAccountsName() {
+        Set<String> keys = this.listAccounts().keySet();
+        return keys.toArray(new String[keys.size()]);
     }
 
     @NoComplete
