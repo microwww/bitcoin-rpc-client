@@ -2,6 +2,7 @@ package com.github.microwww.bitcoin.api;
 
 import com.github.microwww.bitcoin.JsonRpc20;
 import com.github.microwww.bitcoin.JsonRpcClient;
+import com.github.microwww.bitcoin.JsonRpcResult;
 import com.github.microwww.bitcoin.annotation.NoComplete;
 import com.github.microwww.bitcoin.model.*;
 
@@ -28,20 +29,84 @@ public class WalletApi extends JsonRpcClient {
         this.post(json, StringValue.class);
     }
 
+    /**
+     * @param number      (numeric, required) The number of required signatures out of the n keys or addresses.
+     * @param address     (string) bitcoin address or hex-encoded public key
+     * @param lable       (string, optional) A label to assign the addresses to.
+     * @param addressType (string, optional) The address type to use. Options are "legacy", "p2sh-segwit", and "bech32". Default is set by -addresstype.
+     */
     @NoComplete    //addmultisigaddress nrequired ["key",...] ( "label" "address_type" )
-    public void addmultisigaddress() {
+    public MultiSignAddress addmultisigaddress(int number, String[] address, String lable, String addressType) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("addmultisigaddress").appendParams(number).appendParams(address);
+        if (lable != null) {
+            builder.appendParams(lable);
+            if (addressType != null) {
+                builder.appendParams(addressType);
+            }
+        }
+        return this.post(builder.getJson(), MultiSignAddress.Result.class);
     }
 
     @NoComplete //backupwallet "destination"
-    public void backupwallet(String destination) {
+    public void backupWallet(String destination) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("backupwallet").appendParams(destination).getJson();
+        this.post(json, StringValue.class);
     }
 
+    /**
+     * Bumps the fee of an opt-in-RBF transaction T, replacing it with a new transaction B.
+     * An opt-in RBF transaction with the given txid must be in the wallet.
+     * The command will pay the additional fee by decreasing (or perhaps removing) its change output.
+     * If the change output is not big enough to cover the increased fee, the command will currently fail
+     * instead of adding new inputs to compensate. (A future implementation could improve this.)
+     * The command will fail if the wallet or mempool contains a transaction that spends one of T's outputs.
+     * By default, the new fee will be calculated automatically using estimatesmartfee.
+     * The user can specify a confirmation target for estimatesmartfee.
+     * Alternatively, the user can specify totalFee, or use RPC settxfee to set a higher fee rate.
+     * At a minimum, the new fee rate must be high enough to pay an additional new relay fee (incrementalfee
+     * returned by getnetworkinfo) to enter the node's mempool.
+     *
+     * @param txid (string, required) The txid to be bumped
+     * @return (object, optional), nullable
+     */
     @NoComplete //bumpfee "txid" ( options )
-    public void bumpfee(String txid) {
+    public BumpFee.BumpTransactionFee bumpFee(String txid, BumpFee.Options options) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("bumpfee").appendParams(txid);
+        if (options != null) {
+            builder.appendParams(options);
+        }
+        return this.post(builder.getJson(), BumpFee.Result.class);
     }
 
     @NoComplete //createwallet "wallet_name" ( disable_private_keys )
-    public void createwallet(String name) {
+    public WalletName createwallet(String name, boolean disable_private_keys) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("createwallet").appendParams(name);
+        builder.appendParams(disable_private_keys);
+        return this.post(builder.getJson(), WalletName.Result.class);
+    }
+
+    public static class WalletName {
+        public static class Result extends JsonRpcResult<WalletName> {
+        }
+
+        private String name;
+        private String warning;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getWarning() {
+            return warning;
+        }
+
+        public void setWarning(String warning) {
+            this.warning = warning;
+        }
     }
 
     //dumpprivkey "address"
@@ -50,12 +115,24 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json, StringValue.class);
     }
 
+    /**
+     * Dumps all wallet keys in a human-readable format to a server-side file. This does not allow overwriting existing files.
+     * Imported scripts are included in the dumpfile, but corresponding BIP173 addresses, etc. may not be added automatically by importwallet.
+     * Note that if your wallet contains keys which are not derived from your HD seed (e.g. imported keys), these are not covered by
+     * only backing up the seed itself, and must be backed up too (e.g. ensure you back up the whole dumpfile).
+     *
+     * @param filename
+     */
     @NoComplete //dumpwallet "filename"
-    public void dumpWallet(String filename) {
+    public String dumpWallet(String filename) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("dumpwallet").appendParams(filename).getJson();
+        return (String) this.post(json, MapValue.class).get("filename");
     }
 
     @NoComplete //encryptwallet "passphrase"
-    public void encryptwallet(String passphrase) {
+    public void encryptWallet(String passphrase) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("encryptwallet").appendParams(passphrase).getJson();
+        this.post(json, StringValue.class);
     }
 
     //getaccount "address"
@@ -115,8 +192,20 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json, StringValue.class);
     }
 
+    /**
+     * Returns a new Bitcoin address, for receiving change.
+     * This is for use with raw transactions, NOT normal use.
+     *
+     * @param address_type (string, optional) nullable The address type to use. Options are "legacy", "p2sh-segwit", and "bech32". Default is set by -changetype
+     * @return
+     */
     @NoComplete //getrawchangeaddress ( "address_type" )
-    public void getrawchangeaddress() {
+    public String getRawChangeAddress(AccountType address_type) {
+        JsonRpc20.Builder json = new JsonRpc20.Builder().setMethod("getrawchangeaddress");
+        if (address_type != null) {
+            json.appendParams(address_type);
+        }
+        return this.post(json.getJson(), StringValue.class);
     }
 
     @NoComplete //getreceivedbylabel "label" ( minconf )
@@ -225,12 +314,41 @@ public class WalletApi extends JsonRpcClient {
         return list;
     }
 
-    @NoComplete //listlabels ( "purpose" )
-    public void listlabels() {
+    public String[] listLabels() {
+        return this.listLabels(null);
     }
 
-    @NoComplete //listlockunspent
-    public void listlockunspent() {
+    /**
+     * receive / send
+     *
+     * @param purpose (string, optional) [receive | send] Address purpose to list labels for ('send','receive'). An empty string is the same as not providing this argument.
+     * @return Label name
+     */
+    @NoComplete //listlabels ( "purpose" )
+    public String[] listLabels(Purpose purpose) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("listlabels");
+        if (purpose != null) {
+            builder.appendParams(purpose.name());
+        }
+        JsonRpc20 json = builder.getJson();
+        return this.post(json, ArrayValue.StringArray.class);
+    }
+
+    public enum Purpose {
+        receive, send;
+    }
+
+
+    /**
+     * Returns list of temporarily unspendable outputs.
+     * See the lockunspent call to lock and unlock transactions for spending.
+     *
+     * @return List the locked transactions
+     */
+    @NoComplete
+    public OutTransaction[] listLockUnspent() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("listlockunspent").getJson();
+        return this.post(json, OutTransaction.Result.class);
     }
 
     @NoComplete //listreceivedbylabel ( minconf include_empty include_watchonly)
@@ -301,8 +419,15 @@ public class WalletApi extends JsonRpcClient {
     public void loadwallet(String filename) {
     }
 
+    /**
+     * @param unlock ( boolean, required) Whether to unlock (true) or lock (false) the specified transactions
+     * @return true|false    (boolean) Whether the command was successful or not
+     */
     @NoComplete // lockunspent unlock ([{"txid":"txid","vout":n},...])
-    public void lockunspent(String unlock) {
+    public boolean lockUnspent(boolean unlock, OutTransaction[] transactions) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("lockunspent").appendParams(unlock)
+                .appendParams(transactions).getJson();
+        return this.post(json, BooleanValue.class).booleanValue();
     }
 
     @NoComplete //move "fromaccount" "toaccount" amount ( minconf "comment" )

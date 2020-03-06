@@ -4,8 +4,7 @@ import com.github.microwww.bitcoin.model.AccountTransaction;
 import com.github.microwww.bitcoin.model.AccountType;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class WalletApiTest {
 
@@ -63,4 +62,15 @@ public class WalletApiTest {
         assertEquals(64, txid.length());
     }
 
+    @Test
+    public void listLabels() {
+        String[] strings = api.listLabels();
+        assertTrue(strings.length > 0);
+        strings = api.listLabels(WalletApi.Purpose.receive);
+    }
+
+    @Test
+    public void listLockUnspent() {
+        api.listLockUnspent();
+    }
 }

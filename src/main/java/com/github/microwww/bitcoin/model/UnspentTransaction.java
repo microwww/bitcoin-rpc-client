@@ -2,12 +2,10 @@ package com.github.microwww.bitcoin.model;
 
 import com.github.microwww.bitcoin.JsonRpcResult;
 
-public class UnspentTransaction {
+public class UnspentTransaction extends OutTransaction {
     public static class Result extends JsonRpcResult<UnspentTransaction[]> {
     }
 
-    private String txid;
-    private int vout;
     private String address;
     private String account;
     private String scriptPubKey;
@@ -15,22 +13,6 @@ public class UnspentTransaction {
     private int confirmations;
     private boolean spendable;
     private boolean solvable;
-
-    public void setTxid(String txid) {
-        this.txid = txid;
-    }
-
-    public String getTxid() {
-        return txid;
-    }
-
-    public void setVout(int vout) {
-        this.vout = vout;
-    }
-
-    public int getVout() {
-        return vout;
-    }
 
     public void setAddress(String address) {
         this.address = address;
