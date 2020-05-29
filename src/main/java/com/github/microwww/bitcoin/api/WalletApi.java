@@ -17,13 +17,14 @@ public class WalletApi extends JsonRpcClient {
         super(username, password, url);
     }
 
-    @NoComplete    //abandontransaction "txid"
+    // anandontransaction 调用可以将一个钱包交易及其后代标记为放弃，这样 该交易中的输入UTXO就可以重新利用。
+    // abandontransaction "txid"
     public void abandonTransaction(String txid) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("abandontransaction").appendParams(txid).getJson();
         this.post(json, StringValue.class);
     }
 
-    @NoComplete    //abortrescan
+    // Stops current wallet rescan triggered by an RPC call, e.g. by an importprivkey call.
     public void abortRescan() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("abortrescan").getJson();
         this.post(json, StringValue.class);
@@ -35,19 +36,24 @@ public class WalletApi extends JsonRpcClient {
      * @param lable       (string, optional) A label to assign the addresses to.
      * @param addressType (string, optional) The address type to use. Options are "legacy", "p2sh-segwit", and "bech32". Default is set by -addresstype.
      */
-    @NoComplete    //addmultisigaddress nrequired ["key",...] ( "label" "address_type" )
-    public MultiSignAddress addmultisigaddress(int number, String[] address, String lable, String addressType) {
+    public MultiSignAddress addmultisigaddress(int number, String[] address, String lable, AccountType addressType) {
         JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("addmultisigaddress").appendParams(number).appendParams(address);
         if (lable != null) {
             builder.appendParams(lable);
             if (addressType != null) {
-                builder.appendParams(addressType);
+                builder.appendParams(addressType.getType());
             }
         }
         return this.post(builder.getJson(), MultiSignAddress.Result.class);
     }
 
-    @NoComplete //backupwallet "destination"
+    /**
+     * backupwallet "destination"
+     *
+     * Safely copies current wallet file to destination, which can be a directory or a path with filename.
+     *
+     * @param destination (string) The destination directory or file
+     */
     public void backupWallet(String destination) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("backupwallet").appendParams(destination).getJson();
         this.post(json, StringValue.class);
@@ -67,9 +73,9 @@ public class WalletApi extends JsonRpcClient {
      * returned by getnetworkinfo) to enter the node's mempool.
      *
      * @param txid (string, required) The txid to be bumped
+     * @param options
      * @return (object, optional), nullable
      */
-    @NoComplete //bumpfee "txid" ( options )
     public BumpFee.BumpTransactionFee bumpFee(String txid, BumpFee.Options options) {
         JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("bumpfee").appendParams(txid);
         if (options != null) {
@@ -78,8 +84,8 @@ public class WalletApi extends JsonRpcClient {
         return this.post(builder.getJson(), BumpFee.Result.class);
     }
 
-    @NoComplete //createwallet "wallet_name" ( disable_private_keys )
-    public WalletName createwallet(String name, boolean disable_private_keys) {
+    // createwallet "wallet_name" ( disable_private_keys )
+    public WalletName createWallet(String name, boolean disable_private_keys) {
         JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("createwallet").appendParams(name);
         builder.appendParams(disable_private_keys);
         return this.post(builder.getJson(), WalletName.Result.class);
@@ -123,13 +129,13 @@ public class WalletApi extends JsonRpcClient {
      *
      * @param filename
      */
-    @NoComplete //dumpwallet "filename"
+    // dumpwallet "filename"
     public String dumpWallet(String filename) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("dumpwallet").appendParams(filename).getJson();
         return (String) this.post(json, MapValue.class).get("filename");
     }
 
-    @NoComplete //encryptwallet "passphrase"
+    // encryptwallet "passphrase"
     public void encryptWallet(String passphrase) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("encryptwallet").appendParams(passphrase).getJson();
         this.post(json, StringValue.class);
@@ -199,7 +205,6 @@ public class WalletApi extends JsonRpcClient {
      * @param address_type (string, optional) nullable The address type to use. Options are "legacy", "p2sh-segwit", and "bech32". Default is set by -changetype
      * @return
      */
-    @NoComplete //getrawchangeaddress ( "address_type" )
     public String getRawChangeAddress(AccountType address_type) {
         JsonRpc20.Builder json = new JsonRpc20.Builder().setMethod("getrawchangeaddress");
         if (address_type != null) {
@@ -208,17 +213,21 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json.getJson(), StringValue.class);
     }
 
-    @NoComplete //getreceivedbylabel "label" ( minconf )
-    public void getreceivedbylabel(String label) {
+    // getreceivedbylabel "label" ( minconf )
+    public double getReceivedByLabel(String label, int minconf) {
+        JsonRpc20.Builder json = new JsonRpc20.Builder().setMethod("getreceivedbylabel").appendParams(label).appendParams(minconf);
+        return this.post(json.getJson(), BigDecimalValue.class).doubleValue();
     }
 
-    @NoComplete //getreceivedbyaddress "address" ( minconf )
-    public void getreceivedbyaddress(String address) {
+    // getreceivedbyaddress "address" ( minconf )
+    public double getReceivedByAddress(String address, int minconf) {
+        JsonRpc20.Builder json = new JsonRpc20.Builder().setMethod("getreceivedbyaddress").appendParams(address).appendParams(minconf);
+        return this.post(json.getJson(), BigDecimalValue.class).doubleValue();
     }
 
     @NoComplete //gettransaction "txid" ( include_watchonly )
-    public WalletTransaction getTransaction(String txhash) {
-        JsonRpc20 json = new JsonRpc20.Builder().setMethod("gettransaction").appendParams(txhash).getJson();
+    public WalletTransaction getTransaction(String txhash, boolean watchonly) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("gettransaction").appendParams(txhash).appendParams(watchonly).getJson();
         return this.post(json, WalletTransaction.Result.class);
     }
 

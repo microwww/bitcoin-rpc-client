@@ -46,6 +46,28 @@ public class BumpFee {
         }
     }
 
+    /**
+     * <pre>
+     *    {
+     *      "confTarget"        (numeric, optional) Confirmation target (in blocks)
+     *      "totalFee"          (numeric, optional) Total fee (NOT feerate) to pay, in satoshis.
+     *                          In rare cases, the actual fee paid might be slightly higher than the specified
+     *                          totalFee if the tx change output has to be removed because it is too close to
+     *                          the dust threshold.
+     *      "replaceable"       (boolean, optional, default true) Whether the new transaction should still be
+     *                          marked bip-125 replaceable. If true, the sequence numbers in the transaction will
+     *                          be left unchanged from the original. If false, any input sequence numbers in the
+     *                          original transaction that were less than 0xfffffffe will be increased to 0xfffffffe
+     *                          so the new transaction will not be explicitly bip-125 replaceable (though it may
+     *                          still be replaceable in practice, for example if it has unconfirmed ancestors which
+     *                          are replaceable).
+     *      "estimate_mode"     (string, optional, default=UNSET) The fee estimate mode, must be one of:
+     *          "UNSET"
+     *          "ECONOMICAL"
+     *          "CONSERVATIVE"
+     *    }
+     * </pre>
+     */
     public static class Options {
         private Integer confTarget;
         private Double totalFee;

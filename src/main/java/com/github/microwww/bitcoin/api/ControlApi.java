@@ -27,6 +27,11 @@ public class ControlApi extends JsonRpcClient {
         return this.post(json, StringValue.class);
     }
 
+    public String help(String method) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("help").appendParams(method).getJson();
+        return this.post(json, StringValue.class);
+    }
+
     public LoggerStatus logging() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("logging").getJson();
         return this.post(json, LoggerStatus.Result.class);

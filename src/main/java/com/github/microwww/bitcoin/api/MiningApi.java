@@ -13,7 +13,7 @@ public class MiningApi extends JsonRpcClient {
         super(username, password, url);
     }
 
-    String getBlockTemplate() {
+    public String getBlockTemplate() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("getblocktemplate").getJson();
         return this.post(json, StringValue.class);
     }
@@ -38,7 +38,7 @@ public class MiningApi extends JsonRpcClient {
         return this.post(json, BigDecimalValue.class);
     }
 
-    String submitBlock(String hex) {
+    public String submitBlock(String hex) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("submitblock").appendParams(hex).getJson();
         return this.post(json, StringValue.class);
     }
