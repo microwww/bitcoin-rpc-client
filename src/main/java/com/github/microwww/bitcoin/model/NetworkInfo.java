@@ -1,16 +1,7 @@
-/**
- * Copyright 2020 bejson.com
- */
 package com.github.microwww.bitcoin.model;
 
 import com.github.microwww.bitcoin.JsonRpcResult;
 
-/**
- * Auto-generated: 2020-01-08 17:11:40
- *
- * @author bejson.com (i@bejson.com)
- * @website http://www.bejson.com/java2pojo/
- */
 public class NetworkInfo {
 
     public static class Result extends JsonRpcResult<NetworkInfo> {

@@ -1,16 +1,7 @@
-/**
- * Copyright 2020 bejson.com
- */
 package com.github.microwww.bitcoin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Auto-generated: 2020-01-08 17:11:40
- *
- * @author bejson.com (i@bejson.com)
- * @website http://www.bejson.com/java2pojo/
- */
 public class Network {
 
     private String name;

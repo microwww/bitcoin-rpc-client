@@ -1,6 +1,3 @@
-/**
- * Copyright 2019 bejson.com
- */
 package com.github.microwww.bitcoin.model;
 
 import com.github.microwww.bitcoin.JsonRpcResult;

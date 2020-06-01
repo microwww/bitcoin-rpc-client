@@ -1,19 +1,8 @@
-/**
- * Copyright 2019 bejson.com
- */
 package com.github.microwww.bitcoin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.microwww.bitcoin.JsonRpcResult;
 
-import java.util.List;
-
-/**
- * Auto-generated: 2019-12-25 14:27:1
- *
- * @author bejson.com (i@bejson.com)
- * @website http://www.bejson.com/java2pojo/
- */
 public class BlockStats {
     public static class Result extends JsonRpcResult<BlockStats> {
     }
