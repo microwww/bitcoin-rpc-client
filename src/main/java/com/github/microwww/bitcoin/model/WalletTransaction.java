@@ -19,7 +19,7 @@ public class WalletTransaction {
     private long timereceived;
     @JsonProperty("bip125-replaceable")
     private String bip125replaceable;
-    private List<Detail> details;
+    private Detail[] details;
     private String hex;
 
     public double getAmount() {
@@ -94,11 +94,11 @@ public class WalletTransaction {
         this.bip125replaceable = bip125replaceable;
     }
 
-    public List<Detail> getDetails() {
+    public Detail[] getDetails() {
         return details;
     }
 
-    public void setDetails(List<Detail> details) {
+    public void setDetails(Detail[] details) {
         this.details = details;
     }
 

@@ -2,14 +2,19 @@ package com.github.microwww.bitcoin.api;
 
 import com.github.microwww.bitcoin.model.AccountTransaction;
 import com.github.microwww.bitcoin.model.AccountType;
+import com.github.microwww.bitcoin.model.WalletInfo;
+import com.github.microwww.bitcoin.model.WalletTransaction;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
 
 public class WalletApiTest {
 
-    private WalletApi api = new WalletApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
-    private RawTransactionsApi txapi = new RawTransactionsApi("btcrpc", "123456789", "http://192.168.1.31:8332/");
+    private WalletApi api = new WalletApi("rpc", "123456", "http://192.168.1.246:8332/");
+    private RawTransactionsApi txapi = new RawTransactionsApi("rpc", "123456", "http://192.168.1.246:8332/");
 
     @Test
     public void testGetNewAddress() {
@@ -30,7 +35,7 @@ public class WalletApiTest {
 
     @Test
     public void testImportAddress() {
-        api.importAddress("1EVbakhm8HiXXwqsmX4mexCXPiq5Ym7jjK");
+        api.importAddress("1EVbakhm8HiXXwqsmX4mexCXPiq5Ym7jjK", "");
     }
 
     @Test
@@ -72,5 +77,26 @@ public class WalletApiTest {
     @Test
     public void listLockUnspent() {
         api.listLockUnspent();
+    }
+
+    @Test
+    public void getTransaction() {
+        String hash = "975963a54b2131f526fd9cfa9309c91dc4ec4bdce64b101cfe69e059f579c70a";
+        WalletTransaction wt = api.getTransaction(hash, false);
+        System.out.println(wt);
+        BigDecimal de = api.getUnconfirmedBalance();
+        System.out.println(de);
+        WalletInfo info = api.getWalletInfo();
+        Assert.assertNotNull(info.getWalletname());
+    }
+
+    @Test
+    public void importPrivateKey() {
+        String hash = "975963a54b2131f526fd9cfa9309c91dc4ec4bdce64b101cfe69e059f579c70a";
+        String label = api.listAccountsName()[0];
+        String add = api.getAddressesByAccount(label)[0];
+        String ss = api.dumpPrivateKey(add);
+        api.importPrivateKey(ss, label, false);
+
     }
 }

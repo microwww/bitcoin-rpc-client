@@ -49,7 +49,7 @@ public class WalletApi extends JsonRpcClient {
 
     /**
      * backupwallet "destination"
-     *
+     * <p>
      * Safely copies current wallet file to destination, which can be a directory or a path with filename.
      *
      * @param destination (string) The destination directory or file
@@ -72,7 +72,7 @@ public class WalletApi extends JsonRpcClient {
      * At a minimum, the new fee rate must be high enough to pay an additional new relay fee (incrementalfee
      * returned by getnetworkinfo) to enter the node's mempool.
      *
-     * @param txid (string, required) The txid to be bumped
+     * @param txid    (string, required) The txid to be bumped
      * @param options
      * @return (object, optional), nullable
      */
@@ -225,22 +225,26 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json.getJson(), BigDecimalValue.class).doubleValue();
     }
 
-    @NoComplete //gettransaction "txid" ( include_watchonly )
+    // gettransaction "txid" ( include_watchonly )
     public WalletTransaction getTransaction(String txhash, boolean watchonly) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("gettransaction").appendParams(txhash).appendParams(watchonly).getJson();
         return this.post(json, WalletTransaction.Result.class);
     }
 
-    @NoComplete //getunconfirmedbalance
-    public void getunconfirmedbalance() {
+    // getunconfirmedbalance
+    public BigDecimal getUnconfirmedBalance() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("getunconfirmedbalance").getJson();
+        return this.post(json, BigDecimalValue.class);
     }
 
-    @NoComplete //getwalletinfo
-    public void getwalletinfo() {
+    // getwalletinfo
+    public WalletInfo getWalletInfo() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("getwalletinfo").getJson();
+        return this.post(json, WalletInfo.Result.class);
     }
 
-    public void importAddress(String address) {
-        this.importAddress(address, "", true, false);
+    public void importAddress(String address, String label) {
+        this.importAddress(address, label, true, false);
     }
 
     /**
@@ -261,31 +265,91 @@ public class WalletApi extends JsonRpcClient {
         this.post(json, StringValue.class);
     }
 
-    @NoComplete //importmulti "requests" ( "options" )
+    /**
+     * <pre>
+     * 1. requests     (array, required) Data to be imported
+     *   [     (array of json objects)
+     *     {
+     *       "scriptPubKey": "<script>" | { "address":"<address>" }, (string / json, required) Type of scriptPubKey (string for script, json for address)
+     *       "timestamp": timestamp | "now"                        , (integer / string, required) Creation time of the key in seconds since epoch (Jan 1 1970 GMT),
+     *                                                               or the string "now" to substitute the current synced blockchain time. The timestamp of the oldest
+     *                                                               key will determine how far back blockchain rescans need to begin for missing wallet transactions.
+     *                                                               "now" can be specified to bypass scanning, for keys which are known to never have been used, and
+     *                                                               0 can be specified to scan the entire blockchain. Blocks up to 2 hours before the earliest key
+     *                                                               creation time of all keys being imported by the importmulti call will be scanned.
+     *       "redeemscript": "<script>"                            , (string, optional) Allowed only if the scriptPubKey is a P2SH address or a P2SH scriptPubKey
+     *       "pubkeys": ["<pubKey>", ... ]                         , (array, optional) Array of strings giving pubkeys that must occur in the output or redeemscript
+     *       "keys": ["<key>", ... ]                               , (array, optional) Array of strings giving private keys whose corresponding public keys must occur in the output or redeemscript
+     *       "internal": <true>                                    , (boolean, optional, default: false) Stating whether matching outputs should be treated as not incoming payments
+     *       "watchonly": <true>                                   , (boolean, optional, default: false) Stating whether matching outputs should be considered watched even when they're not spendable, only allowed if keys are empty
+     *       "label": <label>                                      , (string, optional, default: '') Label to assign to the address (aka account name, for now), only allowed with internal=false
+     *     }
+     *   ,...
+     *   ]
+     * 2. options                 (json, optional)
+     *   {
+     *      "rescan": <false>,         (boolean, optional, default: true) Stating if should rescan the blockchain after all imports
+     *   }
+     * </pre>
+     *
+     * @param requests
+     */
+    @NoComplete
+    // importmulti "requests" ( "options" )
     public void importmulti(String requests) {
     }
 
-    @NoComplete //importprivkey "privkey" ( "label" ) ( rescan )
-    public void importprivkey(String privkey) {
+    /**
+     * 1. "privkey"          (string, required) The private key (see dumpprivkey)
+     * 2. "label"            (string, optional, default="") An optional label
+     * 3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions
+     *
+     * @param privkey
+     * @return
+     */
+    // importprivkey "privkey" ( "label" ) ( rescan )
+    public void importPrivateKey(String privkey, String label, boolean rescan) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("importprivkey").appendParams(privkey)
+                .appendParams(label)
+                .appendParams(rescan).getJson();
+        this.post(json, StringValue.class);
     }
 
-    @NoComplete //importprunedfunds
-    public void importprunedfunds() {
+    // importprunedfunds
+    public void importPrunedFunds(String rawtransaction, String txoutproof) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("importprunedfunds")
+                .appendParams(rawtransaction)
+                .appendParams(txoutproof).getJson();
+        this.post(json, StringValue.class);
     }
 
-    @NoComplete //importpubkey "pubkey" ( "label" rescan )
-    public void importpubkey(String pubkey) {
+    public void importPublicKey(String pubkey) {
+        this.importPublicKey(pubkey, "", false);
     }
 
-    @NoComplete //importwallet "filename"
-    public void importwallet(String filename) {
+    // importpubkey "pubkey" ( "label" rescan )
+    public void importPublicKey(String pubkey, String label, boolean rescan) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("importpubkey")
+                .appendParams(pubkey).appendParams(label)
+                .appendParams(rescan).getJson();
+        this.post(json, StringValue.class);
     }
 
-    @NoComplete //keypoolrefill ( newsize )
-    public void keypoolrefill(String destination) {
+    // importwallet "filename"
+    public void importWallet(String filename) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("importwallet")
+                .appendParams(filename).getJson();
+        this.post(json, StringValue.class);
     }
 
-    @NoComplete //listaccounts ( minconf include_watchonly)
+    // keypoolrefill ( newsize )
+    public void keyPoolRefill(int newsize) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("keypoolrefill")
+                .appendParams(newsize).getJson();
+        this.post(json, StringValue.class);
+    }
+
+    // listaccounts ( minconf include_watchonly)
     public Map<String, Double> listAccounts() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("listaccounts").getJson();
         return this.post(json, MapValue.class);
@@ -296,7 +360,11 @@ public class WalletApi extends JsonRpcClient {
         return keys.toArray(new String[keys.size()]);
     }
 
-    @NoComplete
+    /**
+     * using {@link #listAddressGroupingsBalance() } to replace
+     *
+     * @return
+     */
     public Object[][][] listAddressGroupings() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("listaddressgroupings").getJson();
         return this.post(json, ArrayValue.ThreeArray.class);
@@ -333,7 +401,7 @@ public class WalletApi extends JsonRpcClient {
      * @param purpose (string, optional) [receive | send] Address purpose to list labels for ('send','receive'). An empty string is the same as not providing this argument.
      * @return Label name
      */
-    @NoComplete //listlabels ( "purpose" )
+    // listlabels ( "purpose" )
     public String[] listLabels(Purpose purpose) {
         JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("listlabels");
         if (purpose != null) {
@@ -361,15 +429,31 @@ public class WalletApi extends JsonRpcClient {
     }
 
     @NoComplete //listreceivedbylabel ( minconf include_empty include_watchonly)
-    public void listreceivedbylabel() {
+    public void listreceivedbylabel(int minconf, boolean include_empty, boolean include_watchonly) {
     }
 
+    /**
+     * 1. minconf           (numeric, optional, default=1) The minimum number of confirmations before payments are included.
+     * 2. include_empty     (bool, optional, default=false) Whether to include addresses that haven't received any payments.
+     * 3. include_watchonly (bool, optional, default=false) Whether to include watch-only addresses (see 'importaddress').
+     */
     @NoComplete //listreceivedbyaddress ( minconf include_empty include_watchonly address_filter )
-    public void listreceivedbyaddress() {
+    public void listreceivedbyaddress(int minconf, boolean include_empty, boolean include_watchonly) {
     }
 
-    @NoComplete //listsinceblock ( "blockhash" target_confirmations include_watchonly include_removed )
-    public void listsinceblock() {
+    /**
+     * 1. "blockhash"            (string, optional) The block hash to list transactions since
+     * 2. target_confirmations:    (numeric, optional, default=1) Return the nth block hash from the main chain. e.g. 1 would mean the best block hash. Note: this is not used as a filter, but only affects [lastblock] in the return value
+     * 3. include_watchonly:       (bool, optional, default=false) Include transactions to watch-only addresses (see 'importaddress')
+     * 4. include_removed:         (bool, optional, default=true) Show transactions that were removed due to a reorg in the "removed" array
+     *                                                            (not guaranteed to work on pruned nodes)
+     * @return
+     */
+    // listsinceblock ( "blockhash" target_confirmations include_watchonly include_removed )
+    public SinceBlockTransaction listSinceBlock(String blockhash, int target_confirmations, boolean include_watchonly, boolean include_removed) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("listsinceblock").appendParams(blockhash)
+                .appendParams(target_confirmations).appendParams(include_watchonly).appendParams(include_removed).getJson();
+        return this.post(json, SinceBlockTransaction.Result.class);
     }
 
     public AccountTransaction[] listTransactions() {
