@@ -7,9 +7,7 @@ import com.github.microwww.bitcoin.annotation.NoComplete;
 import com.github.microwww.bitcoin.model.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class WalletApi extends JsonRpcClient {
 
@@ -422,7 +420,6 @@ public class WalletApi extends JsonRpcClient {
      *
      * @return List the locked transactions
      */
-    @NoComplete
     public OutTransaction[] listLockUnspent() {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("listlockunspent").getJson();
         return this.post(json, OutTransaction.Result.class);
@@ -436,9 +433,14 @@ public class WalletApi extends JsonRpcClient {
      * 1. minconf           (numeric, optional, default=1) The minimum number of confirmations before payments are included.
      * 2. include_empty     (bool, optional, default=false) Whether to include addresses that haven't received any payments.
      * 3. include_watchonly (bool, optional, default=false) Whether to include watch-only addresses (see 'importaddress').
+     *
+     * @return
      */
-    @NoComplete //listreceivedbyaddress ( minconf include_empty include_watchonly address_filter )
-    public void listreceivedbyaddress(int minconf, boolean include_empty, boolean include_watchonly) {
+    //listreceivedbyaddress ( minconf include_empty include_watchonly address_filter )
+    public ReceivedAddress[] listReceivedByAddress(int minconf, boolean include_empty, boolean include_watchonly) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("listreceivedbyaddress")
+                .appendParams(minconf).appendParams(include_empty).appendParams(include_empty).getJson();
+        return this.post(json, ReceivedAddress.Array.class);
     }
 
     /**
@@ -446,7 +448,8 @@ public class WalletApi extends JsonRpcClient {
      * 2. target_confirmations:    (numeric, optional, default=1) Return the nth block hash from the main chain. e.g. 1 would mean the best block hash. Note: this is not used as a filter, but only affects [lastblock] in the return value
      * 3. include_watchonly:       (bool, optional, default=false) Include transactions to watch-only addresses (see 'importaddress')
      * 4. include_removed:         (bool, optional, default=true) Show transactions that were removed due to a reorg in the "removed" array
-     *                                                            (not guaranteed to work on pruned nodes)
+     * (not guaranteed to work on pruned nodes)
+     *
      * @return
      */
     // listsinceblock ( "blockhash" target_confirmations include_watchonly include_removed )
@@ -492,7 +495,7 @@ public class WalletApi extends JsonRpcClient {
      * @param opt           Optional, JSON with query options
      * @return
      */
-    @NoComplete //listunspent ( minconf maxconf  ["addresses",...] [include_unsafe] [query_options])
+    //listunspent ( minconf maxconf  ["addresses",...] [include_unsafe] [query_options])
     public UnspentTransaction[] listUnspent(int minConfirmed, int maxCConfirmed, String[] addresses, boolean includeUnsafe, QueryOptions opt) {
         JsonRpc20.Builder params = new JsonRpc20.Builder().setMethod("listunspent").appendParams(minConfirmed)
                 .appendParams(maxCConfirmed)
@@ -505,6 +508,7 @@ public class WalletApi extends JsonRpcClient {
         return this.post(json, UnspentTransaction.Result.class);
     }
 
+    @NoComplete
     public void listwallets() {
     }
 
@@ -513,26 +517,54 @@ public class WalletApi extends JsonRpcClient {
     }
 
     /**
-     * @param unlock ( boolean, required) Whether to unlock (true) or lock (false) the specified transactions
+     * @param unlock       ( boolean, required) Whether to unlock (true) or lock (false) the specified transactions
+     * @param transactions (option)
      * @return true|false    (boolean) Whether the command was successful or not
      */
-    @NoComplete // lockunspent unlock ([{"txid":"txid","vout":n},...])
-    public boolean lockUnspent(boolean unlock, OutTransaction[] transactions) {
+    // lockunspent unlock ([{"txid":"txid","vout":n},...])
+    public boolean lockUnspent(boolean unlock, OutTransaction... transactions) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("lockunspent").appendParams(unlock)
-                .appendParams(transactions).getJson();
+                .appendParams(Optional.of(transactions)).getJson();
         return this.post(json, BooleanValue.class).booleanValue();
     }
 
-    @NoComplete //move "fromaccount" "toaccount" amount ( minconf "comment" )
-    public void move(String fromAccount, String toAccount, double amount) {
+    /**
+     * Move a specified amount from one account in your wallet to another.
+     * Arguments:
+     *
+     * @param fromAccount "fromaccount"   (string, required) The name of the account to move funds from. May be the default account using "".
+     * @param toAccount   "toaccount"     (string, required) The name of the account to move funds to. May be the default account using "".
+     * @param amount      (numeric) Quantity of BTC to move between accounts.
+     * @param minconf     (numeric, optional) Ignored. Remains for backward compatibility.
+     * @param comment     (string, optional) An optional comment, stored in the wallet only.
+     * @return
+     */
+    // move "fromaccount" "toaccount" amount ( minconf "comment" )
+    public boolean move(String fromAccount, String toAccount, double amount, OptionalInt minconf, Optional<String> comment) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("move").appendParams(fromAccount).appendParams(toAccount)
+                .appendParams(amount).appendParams(minconf.orElse(1)).appendParams(comment).getJson();
+        return this.post(json, BooleanValue.class).booleanValue();
     }
 
-    @NoComplete //removeprunedfunds "txid"
-    public void removeprunedfunds(String txid) {
+    /**
+     * Deletes the specified transaction from the wallet. Meant for use with pruned wallets and as a companion to importprunedfunds.
+     * This will affect wallet balances.
+     *
+     * @param txid (string, required) The hex-encoded id of the transaction you are deleting
+     */
+    @NoComplete("查看返回值") // removeprunedfunds "txid"
+    public void removePrunedFunds(String txid) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("removeprunedfunds").appendParams(txid).getJson();
+        this.post(json, StringValue.class);
     }
 
-    @NoComplete //rescanblockchain ("start_height") ("stop_height")
-    public void rescanblockchain() {
+    // rescanblockchain ("start_height") ("stop_height")
+    public RescanHeight rescanblockchain(OptionalInt startHeight, Optional<Integer> stopHeight) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("rescanblockchain")
+                .appendParams(startHeight.orElse(0))
+                .appendParams(stopHeight)
+                .getJson();
+        return this.post(json, RescanHeight.Result.class);
     }
 
 
@@ -549,7 +581,7 @@ public class WalletApi extends JsonRpcClient {
      * @param commentTo
      * @return
      */
-    @NoComplete //sendfrom "fromaccount" "toaddress" amount ( minconf "comment" "comment_to" )
+    // sendfrom "fromaccount" "toaddress" amount ( minconf "comment" "comment_to" )
     public String sendFrom(String fromAccount, String toAddress, double amount, int minConfirmed, String comment, String commentTo) {
         JsonRpc20 json = new JsonRpc20.Builder().setMethod("sendfrom")
                 .appendParams(fromAccount).appendParams(toAddress).appendParams(amount)
@@ -558,23 +590,73 @@ public class WalletApi extends JsonRpcClient {
     }
 
     /**
-     * @param fromAccount
+     * @param receivedAccount
      * @param tx
-     * @param minConfirmed    Default=1
-     * @param comment         Optional, A comment
-     * @param subtractFeeFrom Optional, A json array with addresses. The fee will be equally deducted from the amount of each selected address. Those recipients will receive less bitcoins than you enter in their corresponding amount field. If no addresses are specified here, the sender pays the fee.
+     * @param minConfirmed
+     * @param comment
+     * @param commentTo       (string, optional) A comment to store the name of the person or organization
+     *                        to which you're sending the transaction. This is not part of the
+     * @param subtractFeeFrom
+     * @param replaceable
+     * @param conf_target
+     * @param mode
      * @return
      */
-    @NoComplete
+    @NoComplete("NO TEST")
     //sendmany "" "fromaccount" {"address":amount,...} ( minconf "comment" ["address",...] replaceable conf_target "estimate_mode")
-    public String sendMany(String fromAccount, TransactionOutput.Transaction[] tx, int minConfirmed, String comment, String[] subtractFeeFrom) {
-        JsonRpc20 json = new JsonRpc20.Builder().setMethod("sendmany").appendParams(fromAccount).appendParams(tx).getJson();
+    public String sendMany(
+            String receivedAccount,
+            TransactionOutput.Transaction[] tx,
+            OptionalInt minConfirmed,
+            Optional<String> comment,
+            Optional<String> commentTo,
+            Optional<Boolean> subtractFeeFrom,
+            Optional<Boolean> replaceable,
+            Optional<Integer> conf_target,
+            Optional<BumpFee.EstimateMode> mode
+    ) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("sendmany")
+                .appendParams(receivedAccount)
+                .appendParams(tx)
+                .appendParams(minConfirmed.orElse(1));
+        JsonRpc20 json = trans(builder, comment, commentTo, subtractFeeFrom, replaceable, conf_target, mode).getJson();
         return this.post(json, StringValue.class);
     }
 
-    @NoComplete
+    private JsonRpc20.Builder trans(
+            JsonRpc20.Builder builder,
+            Optional<String> comment,
+            Optional<String> commentTo,
+            Optional<Boolean> subtractFeeFrom,
+            Optional<Boolean> replaceable,
+            Optional<Integer> conf_target,
+            Optional<BumpFee.EstimateMode> mode
+    ) {
+        builder.appendParams(comment.orElse(null))
+                .appendParams(commentTo.orElse(null))
+                .appendParams(subtractFeeFrom.orElse(Boolean.FALSE))
+                .appendParams(replaceable.orElse(null))
+                .appendParams(conf_target.orElse(null))
+                .appendParams(mode.orElse(BumpFee.EstimateMode.UNSET));
+        return builder;
+    }
+
+    @NoComplete("NO TEST")
     //sendtoaddress "address" amount ( "comment" "comment_to" subtractfeefromamount replaceable conf_target "estimate_mode")
-    public void sendToAddress(String address, double amount) {
+    public String sendToAddress(
+            String address,
+            double amount,
+            Optional<String> comment,
+            Optional<String> commentTo,
+            Optional<Boolean> subtractFeeFrom,
+            Optional<Boolean> replaceable,
+            Optional<Integer> conf_target,
+            Optional<BumpFee.EstimateMode> mode
+    ) {
+        JsonRpc20.Builder builder = new JsonRpc20.Builder().setMethod("sendtoaddress")
+                .appendParams(address).appendParams(amount);
+        JsonRpc20 json = trans(builder, comment, commentTo, subtractFeeFrom, replaceable, conf_target, mode).getJson();
+        return this.post(json, StringValue.class);
     }
 
     @NoComplete //setlabel "address" "label"
@@ -586,11 +668,17 @@ public class WalletApi extends JsonRpcClient {
     }
 
     @NoComplete //settxfee amount
-    public void settxfee(double amount) {
+    public boolean setTxFee(double amount) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("settxfee")
+                .appendParams(amount).getJson();
+        return this.post(json, BooleanValue.class).booleanValue();
     }
 
     @NoComplete //signmessage "address" "message"
-    public void signmessage(String address, String message) {
+    public String signMessage(String address, String message) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("signmessage")
+                .appendParams(address).appendParams(message).getJson();
+        return this.post(json, StringValue.class);
     }
 
     @NoComplete
@@ -608,15 +696,23 @@ public class WalletApi extends JsonRpcClient {
     }
 
     @NoComplete //walletlock
-    public void walletlock() {
+    public void walletLock() {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("walletlock").getJson();
+        this.post(json, StringValue.class);
     }
 
     @NoComplete //walletpassphrase "passphrase" timeout
-    public void walletpassphrase(String passphrase, int timeout) {
+    public void walletPassphrase(String passphrase, int timeoutSeconds) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("walletpassphrase")
+                .appendParams(passphrase).appendParams(timeoutSeconds).getJson();
+        this.post(json, StringValue.class);
     }
 
     @NoComplete //walletpassphrasechange "oldpassphrase" "newpassphrase"
-    public void walletpassphrasechange(String oldPass, String newPass) {
+    public void walletPassphraseChange(String oldPass, String newPass) {
+        JsonRpc20 json = new JsonRpc20.Builder().setMethod("walletpassphrasechange")
+                .appendParams(oldPass).appendParams(newPass).getJson();
+        this.post(json, StringValue.class);
     }
 
     @NoComplete //walletprocesspsbt "psbt" ( sign "sighashtype" bip32derivs )

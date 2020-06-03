@@ -76,7 +76,6 @@ public class WalletApiTest {
 
     @Test
     public void listLockUnspent() {
-        api.listLockUnspent();
     }
 
     @Test

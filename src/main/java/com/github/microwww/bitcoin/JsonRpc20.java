@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 public class JsonRpc20 implements Serializable {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -34,6 +35,17 @@ public class JsonRpc20 implements Serializable {
             return this;
         }
 
+        public Builder appendParams(Optional<?> params) {
+            appendParams(params.orElse(null));
+            return this;
+        }
+
+        /**
+         * NOT skip null !
+         *
+         * @param params
+         * @return
+         */
         public Builder appendParams(Object params) {
             Object pam = this.json.getParams();
             Collection list;
