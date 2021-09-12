@@ -1,16 +1,7 @@
-/**
- * Copyright 2020 aTool.org
- */
 package com.github.microwww.bitcoin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Auto-generated: 2020-01-20 14:56:55
- *
- * @author aTool.org (i@aTool.org)
- * @website http://www.atool9.com/json2javabean.php
- */
 public class Embedded {
 
 

@@ -1,6 +1,3 @@
-/**
- * Copyright 2020 aTool.org
- */
 package com.github.microwww.bitcoin.model;
 
 import com.github.microwww.bitcoin.JsonRpcResult;
